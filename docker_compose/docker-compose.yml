@@ -1,0 +1,13 @@
+services:
+  #--------------------------------
+  telegrambotdb:
+    image: 'postgres:17.0'
+    ports:
+      - ${LOCAL_PG_PORT}:5432
+
+    environment:
+      POSTGRES_USER: ${LOCAL_PG_USER}
+      POSTGRES_PASSWORD: ${LOCAL_PG_PASS}
+      POSTGRES_DB: ${LOCAL_DB_NAME}
+
+  #--------------------------------

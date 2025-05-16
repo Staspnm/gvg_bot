@@ -11,11 +11,11 @@ import (
 type Config struct {
 	TelegramToken string
 	DBConnString  string
-	OwnerID       int64
+	OwnerID       string
 }
 
 func Load() (*Config, error) {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load("tg.env"); err != nil {
 		log.Println("No .env file found")
 	}
 
@@ -29,9 +29,9 @@ func Load() (*Config, error) {
 		log.Fatal("DB_CONN_STRING is not set")
 	}
 
-	ownerID := int64(0)
+	ownerID := ""
 	if id := os.Getenv("OWNER_ID"); id != "" {
-		ownerID = mustParseInt64(id)
+		ownerID = id
 	}
 
 	return &Config{

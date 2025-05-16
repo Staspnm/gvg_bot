@@ -1,22 +1,16 @@
+package main
+
 import (
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-)
 
-package main
+	"gopkg.in/telebot.v3"
 
-import (
-"log"
-"os"
-"os/signal"
-"syscall"
-
-"github.com/gvg-bot/config"
-"github.com/gvg-bot/database"
-"github.com/gvg-bot/handlers"
-"gopkg.in/telebot.v3"
+	"github.com/gvg-bot/config"
+	"github.com/gvg-bot/database"
+	"github.com/gvg-bot/handlers"
 )
 
 func main() {

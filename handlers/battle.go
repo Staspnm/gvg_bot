@@ -1,18 +1,13 @@
-package handlerspackage
+package handlers
 
 import (
 	"fmt"
 	"strings"
-)
-handlers
 
-import (
-"fmt"
-"strings"
-"time"
+	"gopkg.in/telebot.v3"
 
-"github.com/gvg-bot/database"
-"gopkg.in/telebot.v3"
+	"github.com/gvg-bot/database"
+	"github.com/gvg-bot/models"
 )
 
 func handleBattleReport(c telebot.Context, db *database.Database) error {
