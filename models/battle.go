@@ -11,5 +11,5 @@ type BattleResult struct {
 	FlagsCount int
 	ReportedAt time.Time
 	GuildName  string
-	BattleDate time.Date
+	BattleDate time.Time
 }

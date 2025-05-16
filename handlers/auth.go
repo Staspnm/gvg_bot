@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"strings"
 
+	"gopkg.in/telebot.v3"
+
 	"github.com/gvg-bot/database"
 	"github.com/gvg-bot/models"
-	"gopkg.in/telebot.v3"
 )
 
 func handleRegistration(c telebot.Context, db *database.Database) error {
