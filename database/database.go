@@ -3,7 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"log"
+	// "log"
 
 	_ "github.com/lib/pq"
 )
@@ -18,12 +18,14 @@ func Init(connString string) (*Database, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("failed to ping database: %w", err)
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("database - init - db.ping - failed to ping database: %w", err)
 	}
 
 	// Применяем миграции
-	if err := applyMigrations(db); err != nil {
+	err = applyMigrations(db)
+	if err != nil {
 		return nil, fmt.Errorf("failed to apply migrations: %w", err)
 	}
 

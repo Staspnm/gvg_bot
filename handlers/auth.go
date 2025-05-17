@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -10,16 +12,30 @@ import (
 )
 
 func handleRegistration(c telebot.Context, db *database.Database) error {
-	if c.Message().Private() {
-		return c.Send("Регистрация возможна только в групповом чате гильдии.")
-	}
+	//if c.Message().Private() {
+	//	return c.Send("Регистрация возможна только в групповом чате гильдии.")
+	//}
 
 	// Проверяем, зарегистрирован ли уже пользователь
 	var existingUser models.User
-	err := db.QueryRow("SELECT id FROM users WHERE telegram_id = $1", c.Sender().ID).Scan(&existingUser.ID)
-	if err == nil {
-		return c.Send("Вы уже зарегистрированы.")
+	actualUserID := c.Sender().ID
+	err := db.QueryRow("SELECT id FROM users WHERE telegram_id = $1", actualUserID).Scan(&existingUser.ID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		err = c.Send("техническая проблема - попробуйте позднее")
+		return fmt.Errorf("handlers - handleRegistration - db.QueryRow Scan: %w", err)
 	}
+
+	if err == nil {
+		err = c.Send("Вы уже зарегистрированы.")
+		if err != nil {
+			return fmt.Errorf("handlers - handleRegistration - c.Send: %w", err)
+		}
+		return nil
+	}
+
+	//if err == nil {
+	//	return c.Send("Вы уже зарегистрированы.")
+	//}
 
 	// Разбираем сообщение для регистрации
 	// Формат: /register игровой_ник 123456789 название_гильдии роль
