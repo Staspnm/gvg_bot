@@ -9,3 +9,5 @@ is_active BOOLEAN DEFAULT TRUE,
 registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX idx_users_nine_digit_code ON users (nine_digit_code);
