@@ -11,3 +11,7 @@ battle_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
 CREATE INDEX idx_battle_results_guild_location_date ON battle_results (guild_name, location, battle_date);
+
+ALTER TABLE battle_results
+    DROP CONSTRAINT IF EXISTS battle_results_flags_count_check,
+    ADD CONSTRAINT battle_results_flags_count_check CHECK (flags_count BETWEEN 0 AND 22);

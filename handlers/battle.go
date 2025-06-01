@@ -46,11 +46,11 @@ func handleBattleReport(c telebot.Context, db *database.Database) error {
 		return c.Send("Неверная локация. Допустимые значения: T1-T4, B1-B4, F1-F2")
 	}
 
-	// Проверяем количество флагов
+	// Проверяем количество стягов
 	var flags int
 	_, err = fmt.Sscanf(flagsCount, "%d", &flags)
-	if err != nil || flags < 1 || flags > 22 {
-		return c.Send("Количество флагов должно быть числом от 1 до 22")
+	if err != nil || flags < 0 || flags > 22 {
+		return c.Send("Количество стягов должно быть числом от 0 до 22")
 	}
 
 	// Сохраняем результат битвы
@@ -102,7 +102,7 @@ func handleBattleResults(c telebot.Context, db *database.Database) error {
 		if err := rows.Scan(&loc, &enemy, &own, &flags, &nickname); err != nil {
 			continue
 		}
-		results = append(results, fmt.Sprintf("%s: %s vs %s - %d флагов (от %s)", loc, enemy, own, flags, nickname))
+		results = append(results, fmt.Sprintf("%s: %s vs %s - %d стягов (от %s)", loc, enemy, own, flags, nickname))
 	}
 
 	if len(results) == 0 {

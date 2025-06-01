@@ -17,6 +17,10 @@ func InitHandlers(bot *telebot.Bot, db *database.Database) {
 	bot.Handle("/deactivate", func(c telebot.Context) error {
 		return handleDeactivateUser(c, db)
 	})
+	// Добавляем функцию смены роли
+	bot.Handle("/setrole", func(c telebot.Context) error {
+		return handleSetRole(c, db)
+	})
 
 	// Добавляем в функцию InitHandlers
 	bot.Handle("/editmyinfo", func(c telebot.Context) error {
@@ -40,6 +44,10 @@ func InitHandlers(bot *telebot.Bot, db *database.Database) {
 			return handleMissingReports(c, db, loc)
 		})
 	}
+
+	bot.Handle("/changeguild", func(c telebot.Context) error {
+		return handleChangeGuild(c, db)
+	})
 
 	// Добавляем обработчик для кнопки
 	bot.Handle(&telebot.Btn{Text: "Напомнить игрокам"}, func(c telebot.Context) error {
@@ -86,4 +94,10 @@ func InitHandlers(bot *telebot.Bot, db *database.Database) {
 			return handleBattleResults(c, db)
 		})
 	}
+
+	// Добавляем в функцию InitHandlers
+	bot.Handle("/userinfo", func(c telebot.Context) error {
+		return handleUserInfo(c, db)
+	})
+
 }
