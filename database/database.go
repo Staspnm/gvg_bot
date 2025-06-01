@@ -72,5 +72,10 @@ func applyMigrations(db *sql.DB) error {
 		return fmt.Errorf("failed to create battle_results table: %w", err)
 	}
 
+	_, err = db.Exec(`
+		ALTER TABLE battle_results
+			DROP CONSTRAINT IF EXISTS battle_results_flags_count_check,
+			ADD CONSTRAINT battle_results_flags_count_check CHECK (flags_count BETWEEN 0 AND 22)
+	`)
 	return nil
 }

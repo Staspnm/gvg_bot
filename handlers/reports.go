@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/gvg-bot/models"
 	"strings"
+
+	"github.com/gvg-bot/models"
 
 	"github.com/gvg-bot/database"
 	"gopkg.in/telebot.v3"
@@ -287,7 +288,8 @@ func findMissingPlayers(allPlayers, reportedPlayers []string) []string {
 
 	var missing []string
 	for _, p := range allPlayers {
-		if !reportedMap[p] {
+		isReported := reportedMap[p]
+		if !isReported {
 			missing = append(missing, p)
 		}
 	}

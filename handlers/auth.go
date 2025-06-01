@@ -1,44 +1,29 @@
 package handlers
 
 import (
-	"database/sql"
-	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/gvg-bot/database"
-	"github.com/gvg-bot/models"
+	"github.com/gvg-bot/usecases/registration"
 	"gopkg.in/telebot.v3"
 )
 
-func handleRegistration(c telebot.Context, db *database.Database) error {
-	//if c.Message().Private() {
-	//	return c.Send("Регистрация возможна только в групповом чате гильдии.")
-	//}
+type registrator interface {
+	Registration(user registration.User, db *database.Database) error
+}
 
-	// Проверяем, зарегистрирован ли уже пользователь
-	var existingUser models.User
-	actualUserID := c.Sender().ID
-	err := db.QueryRow("SELECT id FROM users WHERE telegram_id = $1", actualUserID).Scan(&existingUser.ID)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		err = c.Send("техническая проблема - попробуйте позднее")
-		return fmt.Errorf("handlers - handleRegistration - db.QueryRow Scan: %w", err)
+type BotHandler struct {
+	registrator registrator
+}
+
+func New(registrator registrator) *BotHandler {
+	return &BotHandler{
+		registrator: registrator,
 	}
+}
 
-	if err == nil {
-		err = c.Send("Вы уже зарегистрированы.")
-		if err != nil {
-			return fmt.Errorf("handlers - handleRegistration - c.Send: %w", err)
-		}
-		return nil
-	}
-
-	//if err == nil {
-	//	return c.Send("Вы уже зарегистрированы.")
-	//}
-
-	// Разбираем сообщение для регистрации
-	// Формат: /register игровой_ник 123456789 название_гильдии роль
+func (handler *BotHandler) handleRegistration(c telebot.Context, db *database.Database) error {
 	args := strings.Split(c.Message().Text, " ")
 	if len(args) != 5 {
 		return c.Send("Неверный формат регистрации. Используйте: /register игровой_ник 123456789 название_гильдии роль")
@@ -49,24 +34,18 @@ func handleRegistration(c telebot.Context, db *database.Database) error {
 	guildName := args[3]
 	role := strings.ToLower(args[4])
 
-	// Проверяем роль
-	validRoles := map[string]bool{"owner": true, "leader": true, "officer": true, "member": true}
-	if !validRoles[role] {
-		return c.Send("Неверная роль. Допустимые значения: owner, leader, officer, member")
+	user := registration.User{
+		TelegramID:    c.Sender().ID,
+		GameNickname:  gameNick,
+		NineDigitCode: code,
+		GuildName:     guildName,
+		GuildRole:     role,
 	}
 
-	// Проверяем код (9 цифр)
-	if len(code) != 9 {
-		return c.Send("Код должен состоять из 9 цифр.")
-	}
-
-	// Сохраняем пользователя в базу данных
-	_, err = db.Exec(`
-		INSERT INTO users (telegram_id, game_nickname, nine_digit_code, guild_name, guild_role, is_active)
-		VALUES ($1, $2, $3, $4, $5, TRUE)
-	`, c.Sender().ID, gameNick, code, guildName, role)
+	err := handler.registrator.Registration(user, db)
 	if err != nil {
-		return c.Send("Ошибка при регистрации. Попробуйте позже.")
+		c.Send(fmt.Printf("Возникла ошибка регистрации: %v", err))
+		return err
 	}
 
 	return c.Send(fmt.Sprintf("Регистрация успешна! Добро пожаловать, %s (%s) гильдии %s!", gameNick, role, guildName))

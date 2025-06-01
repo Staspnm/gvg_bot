@@ -9,6 +9,7 @@ import (
 	"github.com/gvg-bot/config"
 	"github.com/gvg-bot/database"
 	"github.com/gvg-bot/handlers"
+	"github.com/gvg-bot/usecases/registration"
 	"gopkg.in/telebot.v3"
 )
 
@@ -37,8 +38,12 @@ func main() {
 		log.Fatalf("Failed to create bot: %v", err)
 	}
 
+	registrator := registration.New()
+
+	regHandler := handlers.New(registrator)
+
 	// Инициализация обработчиков
-	handlers.InitHandlers(bot, db)
+	handlers.NewHandlers(bot, db, regHandler).InitHandlers()
 
 	// Запуск бота
 	go bot.Start()
