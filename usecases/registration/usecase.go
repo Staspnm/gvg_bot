@@ -20,9 +20,6 @@ type User struct {
 	IsActive      bool
 }
 
-type storage interface {
-}
-
 type Usecase struct {
 }
 

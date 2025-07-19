@@ -40,10 +40,8 @@ func main() {
 
 	registrator := registration.New()
 
-	regHandler := handlers.New(registrator)
-
 	// Инициализация обработчиков
-	handlers.NewHandlers(bot, db, regHandler).InitHandlers()
+	handlers.NewHandlers(bot, db, registrator).InitHandlers()
 
 	// Запуск бота
 	go bot.Start()

@@ -10,7 +10,7 @@ import (
 	"gopkg.in/telebot.v3"
 )
 
-func handleBattleReport(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleBattleReport(c telebot.Context, db *database.Database) error {
 	// Проверяем, зарегистрирован ли пользователь и активен ли он
 	var user models.User
 	err := db.QueryRow(`
@@ -65,7 +65,7 @@ func handleBattleReport(c telebot.Context, db *database.Database) error {
 	return c.Send("Результат битвы успешно сохранен!")
 }
 
-func handleBattleResults(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleBattleResults(c telebot.Context, db *database.Database) error {
 	// Проверяем, является ли пользователь офицером или выше
 	var user models.User
 	err := db.QueryRow(`

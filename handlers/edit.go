@@ -11,7 +11,7 @@ import (
 )
 
 // handleEditUserSelf обрабатывает редактирование своих данных
-func handleEditUserSelf(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleEditUserSelf(c telebot.Context, db *database.Database) error {
 	// Получаем текущего пользователя
 	var user models.User
 	err := db.QueryRow(`
@@ -59,7 +59,7 @@ func handleEditUserSelf(c telebot.Context, db *database.Database) error {
 }
 
 // handleEditUserByOfficer обрабатывает редактирование данных пользователей офицерами
-func handleEditUserByOfficer(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleEditUserByOfficer(c telebot.Context, db *database.Database) error {
 	// Проверяем права офицера
 	var officer models.User
 	err := db.QueryRow(`
@@ -173,12 +173,12 @@ func handleEditUserByOfficer(c telebot.Context, db *database.Database) error {
 }
 
 // InitEditHandlers инициализирует обработчики редактирования
-func InitEditHandlers(bot *telebot.Bot, db *database.Database) {
+func (handler *Handler) InitEditHandlers(bot *telebot.Bot, db *database.Database) {
 	bot.Handle("/editmyinfo", func(c telebot.Context) error {
-		return handleEditUserSelf(c, db)
+		return handler.handleEditUserSelf(c, db)
 	})
 
 	bot.Handle("/edituser", func(c telebot.Context) error {
-		return handleEditUserByOfficer(c, db)
+		return handler.handleEditUserByOfficer(c, db)
 	})
 }

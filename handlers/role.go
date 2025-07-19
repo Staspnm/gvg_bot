@@ -10,7 +10,7 @@ import (
 	"gopkg.in/telebot.v3"
 )
 
-func handleSetRole(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleSetRole(c telebot.Context, db *database.Database) error {
 	// Формат: /setrole ник_игрока новая_роль
 	args := strings.Split(c.Message().Text, " ")
 	if len(args) < 3 {

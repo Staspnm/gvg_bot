@@ -3,14 +3,15 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gvg-bot/models"
 	"strings"
+
+	"github.com/gvg-bot/models"
 
 	"github.com/gvg-bot/database"
 	"gopkg.in/telebot.v3"
 )
 
-func handleChangeGuild(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleChangeGuild(c telebot.Context, db *database.Database) error {
 	// Получаем текущего пользователя
 	var user models.User
 	err := db.QueryRow(`

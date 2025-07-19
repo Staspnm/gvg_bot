@@ -9,21 +9,7 @@ import (
 	"gopkg.in/telebot.v3"
 )
 
-type registrator interface {
-	Registration(user registration.User, db *database.Database) error
-}
-
-type BotHandler struct {
-	registrator registrator
-}
-
-func New(registrator registrator) *BotHandler {
-	return &BotHandler{
-		registrator: registrator,
-	}
-}
-
-func (handler *BotHandler) handleRegistration(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleRegistration(c telebot.Context, db *database.Database) error {
 	args := strings.Split(c.Message().Text, " ")
 	if len(args) != 5 {
 		return c.Send("Неверный формат регистрации. Используйте: /register игровой_ник 123456789 название_гильдии роль")
@@ -44,7 +30,7 @@ func (handler *BotHandler) handleRegistration(c telebot.Context, db *database.Da
 
 	err := handler.registrator.Registration(user, db)
 	if err != nil {
-		c.Send(fmt.Printf("Возникла ошибка регистрации: %v", err))
+		c.Send(fmt.Sprintf("Возникла ошибка регистрации: %v", err))
 		return err
 	}
 

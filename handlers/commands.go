@@ -5,27 +5,33 @@ import (
 	"strings"
 
 	"github.com/gvg-bot/database"
+	"github.com/gvg-bot/usecases/registration"
 	"gopkg.in/telebot.v3"
 )
 
-type handler interface {
-	handleRegistration(c telebot.Context, db *database.Database) error
+type registrator interface {
+	Registration(user registration.User, db *database.Database) error
+}
+
+type reporter interface {
+	MissingReports(db *database.Database) ([]string, error)
 }
 
 type Handler struct {
-	handler handler
-	bot     *telebot.Bot
-	db      *database.Database
+	registrator registrator
+	reporter    reporter
+	bot         *telebot.Bot
+	db          *database.Database
 }
 
-func NewHandlers(bot *telebot.Bot, db *database.Database, handler handler) *Handler {
-	return &Handler{handler: handler, bot: bot, db: db}
+func NewHandlers(bot *telebot.Bot, db *database.Database, registrator registrator, reporter reporter) *Handler {
+	return &Handler{registrator: registrator, reporter: reporter, bot: bot, db: db}
 }
 
 func (handler *Handler) InitHandlers() {
 	// Регистрация пользователя
 	handler.bot.Handle("/register", func(c telebot.Context) error {
-		return handler.handler.handleRegistration(c, handler.db)
+		return handler.handleRegistration(c, handler.db)
 	})
 
 	// Деактивация пользователя
@@ -34,21 +40,21 @@ func (handler *Handler) InitHandlers() {
 	})
 	// Добавляем функцию смены роли
 	handler.bot.Handle("/setrole", func(c telebot.Context) error {
-		return handleSetRole(c, handler.db)
+		return handler.handleSetRole(c, handler.db)
 	})
 
 	// Добавляем в функцию InitHandlers
 	handler.bot.Handle("/editmyinfo", func(c telebot.Context) error {
-		return handleEditUserSelf(c, handler.db)
+		return handler.handleEditUserSelf(c, handler.db)
 	})
 
 	handler.bot.Handle("/edituser", func(c telebot.Context) error {
-		return handleEditUserByOfficer(c, handler.db)
+		return handler.handleEditUserByOfficer(c, handler.db)
 	})
 
 	// Добавляем в функцию InitHandlers
 	handler.bot.Handle("/missingreports", func(c telebot.Context) error {
-		return handleMissingReports(c, handler.db, "")
+		return handler.handleMissingReports(c, handler.db, "")
 	})
 
 	// Добавляем команды для каждой локации
@@ -56,12 +62,12 @@ func (handler *Handler) InitHandlers() {
 	for _, loc := range locations {
 		handler.bot.Handle("/missingreports"+loc, func(c telebot.Context) error {
 			loc := strings.TrimPrefix(c.Message().Text, "/missingreports")
-			return handleMissingReports(c, handler.db, loc)
+			return handler.handleMissingReports(c, handler.db, loc)
 		})
 	}
 
 	handler.bot.Handle("/changeguild", func(c telebot.Context) error {
-		return handleChangeGuild(c, handler.db)
+		return handler.handleChangeGuild(c, handler.db)
 	})
 
 	// Добавляем обработчик для кнопки
@@ -98,7 +104,7 @@ func (handler *Handler) InitHandlers() {
 	// Отчет о битве (обрабатываем все сообщения, не начинающиеся с /)
 	handler.bot.Handle(telebot.OnText, func(c telebot.Context) error {
 		if c.Message().Text[0] != '/' {
-			return handleBattleReport(c, handler.db)
+			return handler.handleBattleReport(c, handler.db)
 		}
 		return nil
 	})
@@ -107,13 +113,13 @@ func (handler *Handler) InitHandlers() {
 	locations = []string{"T1", "T2", "T3", "T4", "B1", "B2", "B3", "B4", "F1", "F2"}
 	for _, loc := range locations {
 		handler.bot.Handle("/"+loc, func(c telebot.Context) error {
-			return handleBattleResults(c, handler.db)
+			return handler.handleBattleResults(c, handler.db)
 		})
 	}
 
 	// Добавляем в функцию InitHandlers
 	handler.bot.Handle("/userinfo", func(c telebot.Context) error {
-		return handleUserInfo(c, handler.db)
+		return handler.handleUserInfo(c, handler.db)
 	})
 
 }

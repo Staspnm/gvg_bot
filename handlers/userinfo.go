@@ -3,14 +3,15 @@ package handlers
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gvg-bot/models"
 	"strings"
+
+	"github.com/gvg-bot/models"
 
 	"github.com/gvg-bot/database"
 	"gopkg.in/telebot.v3"
 )
 
-func handleUserInfo(c telebot.Context, db *database.Database) error {
+func (handler *Handler) handleUserInfo(c telebot.Context, db *database.Database) error {
 	// Проверяем, является ли пользователь владельцем
 	var user models.User
 	err := db.QueryRow(`

@@ -113,7 +113,10 @@ import (
 //	return missing
 //}
 
-func handleMissingReports(c telebot.Context, db *database.Database, specificLocation string) error {
+func (handler *Handler) handleMissingReports(c telebot.Context, db *database.Database, specificLocation string) error {
+
+	pidorasList, err := handler.reporter.MissingReports(db)
+	
 	// Проверяем права офицера
 	var officer models.User
 	err := db.QueryRow(`
